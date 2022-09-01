@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebAPI_Task2.Model;
+using WebAPI_Task2.Services;
 
 namespace WebAPI_Task2
 {
@@ -17,6 +18,9 @@ namespace WebAPI_Task2
             {
                 c.SwaggerDoc("v1", new() { Title = "WebAPI-Task2", Version = "v1" });
             });
+            builder.Services.AddScoped<IBookService, BookService>();
+            builder.Services.AddScoped<IRatingService, RatingService>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
 
             var app = builder.Build();
 

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace WebAPI_Task2.Services
 {
-    public class BookService
+    public class BookService : IBookService
     {
         private readonly ApplicationContext _db;
 

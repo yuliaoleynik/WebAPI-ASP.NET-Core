@@ -2,7 +2,7 @@
 
 namespace WebAPI_Task2.Services
 {
-    public class ReviewService
+    public class ReviewService : IReviewService
     {
         private readonly ApplicationContext _db;
 

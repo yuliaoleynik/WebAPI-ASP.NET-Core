@@ -2,7 +2,7 @@
 
 namespace WebAPI_Task2.Services
 {
-    public class RatingService
+    public class RatingService : IRatingService
     {
         private readonly ApplicationContext _db;
 
