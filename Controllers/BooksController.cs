@@ -9,9 +9,17 @@ namespace WebAPI_Task2.Controllers
     public class BooksController : ControllerBase
     {
         private readonly BookService bookService;
-        public BooksController(BookService bookService)
+        private readonly ReviewService reviewService;
+        private readonly RatingService ratingService;
+
+        public BooksController(
+            BookService bookService,
+            ReviewService reviewService,
+            RatingService ratingService)
         {
             this.bookService = bookService;
+            this.reviewService = reviewService;
+            this.ratingService = ratingService;
         }
 
         [HttpGet("/Get")]
@@ -24,7 +32,7 @@ namespace WebAPI_Task2.Controllers
         [HttpGet("/{id}")]
         public async Task<ActionResult<BookDetailsDTO>> GetByID(int id)
         {
-            var book = bookService.GetOne(id);
+            var book = await bookService.GetOne(id);
             if(book is null)
             {
                 return NotFound();
@@ -45,49 +53,31 @@ namespace WebAPI_Task2.Controllers
             {
                 return Ok(book.ID);
             }
-
             return BadRequest();
         }
 
         [HttpPut("/{id}/Review")]
         public async Task<ActionResult> SaveReview(int id, Review review)
         {
-            Book? book = _db.Books.FirstOrDefault(b => b.ID == id);
-            if (book != null)
+            int result = await reviewService.AddReview(id, review);
+            if (result != 0)
             {
-                review.Book = book;
-                await _db.Reviews.AddAsync(review);
-                await _db.SaveChangesAsync();
-
-                return Ok();
+                return Ok(result);
             }
-            return NotFound();
+            return BadRequest();
         }
 
         [HttpPut("/{id}/Rate")]
         public async Task<ActionResult> AddRating(int id, Rating rating)
         {
             if (rating == null || rating.Score > 5) { return BadRequest(); }
+            var temp = 0;
+            var result = await ratingService.AddRate(id, rating);
 
-            Book? book = _db.Books.FirstOrDefault(b => b.ID == id);
-            if (book != null)
+            if (result)
             {
-                rating.Book = book;
-                var addOrUpdateRating = _db.Ratings.FirstOrDefault(r => r.Book == book);
-                if (addOrUpdateRating == null)
-                {
-                    await _db.Ratings.AddAsync(rating);
-                    await _db.SaveChangesAsync();
-                }
-                else
-                {
-                    addOrUpdateRating.Score = rating.Score;
-                    await _db.SaveChangesAsync();
-                }
-
                 return Ok();
             }
-
             return NotFound();
         }
 
@@ -99,17 +89,8 @@ namespace WebAPI_Task2.Controllers
             {
                 return Ok();
             }
-
             return NoContent();
         }
-
-        [NonAction]
-        public static ReviewDTO ReviewToDTO(Review review) =>
-            new ReviewDTO
-            {
-                ID = review.ID,
-                Message = review.Message,
-                Reviewer = review.Reviewer
-            };
+        
     }
 }

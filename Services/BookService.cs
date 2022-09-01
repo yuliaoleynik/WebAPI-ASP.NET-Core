@@ -42,7 +42,7 @@ namespace WebAPI_Task2.Services
             Book? book = _db.Books.FirstOrDefault(b => b.ID == id);
             if (book != null)
             {
-                return await new BookDetailsDTO
+                return new BookDetailsDTO
                 {
                     ID = book.ID,
                     Title = book.Title,
@@ -88,5 +88,13 @@ namespace WebAPI_Task2.Services
             await _db.SaveChangesAsync();
             return true;
         }
+
+        public static ReviewDTO ReviewToDTO (Review review) =>
+            new ReviewDTO
+            {
+                ID = review.ID,
+                Message = review.Message,
+                Reviewer = review.Reviewer
+            };
     }
 }
