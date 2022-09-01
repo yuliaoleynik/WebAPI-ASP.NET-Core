@@ -14,6 +14,11 @@ namespace WebAPI_Task2.Model
         public string? Author { get; set; }
         [Required(ErrorMessage = "Не указан жанр")]
         public string? Genre { get; set; }
+
+        public static implicit operator Task<object>(Book v)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class BookDTO
