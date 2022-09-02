@@ -71,7 +71,12 @@ namespace WebAPI_Task2.Services
             {
                 return false;
             }
-            oldBook = book;
+
+            oldBook.Author = book.Author;
+            oldBook.Title = book.Title;
+            oldBook.Genre = book.Genre;
+            oldBook.Content = book.Content;
+
             await _db.SaveChangesAsync();
             return true;
         }

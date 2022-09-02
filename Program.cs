@@ -11,16 +11,18 @@ namespace WebAPI_Task2
             var builder = WebApplication.CreateBuilder(args);
             string connection = builder.Configuration.GetConnectionString("DefaltConnection");
 
-            builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
+            
             builder.Services.AddControllers();
+            builder.Services.AddScoped<IBookService, BookService>();
+            builder.Services.AddScoped<IRatingService, RatingService>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new() { Title = "WebAPI-Task2", Version = "v1" });
             });
-            builder.Services.AddScoped<IBookService, BookService>();
-            builder.Services.AddScoped<IRatingService, RatingService>();
-            builder.Services.AddScoped<IReviewService, ReviewService>();
+           
+            builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
 
             var app = builder.Build();
 

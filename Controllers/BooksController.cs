@@ -8,14 +8,14 @@ namespace WebAPI_Task2.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly BookService bookService;
-        private readonly ReviewService reviewService;
-        private readonly RatingService ratingService;
+        private readonly IBookService bookService;
+        private readonly IReviewService reviewService;
+        private readonly IRatingService ratingService;
 
         public BooksController(
-            BookService bookService,
-            ReviewService reviewService,
-            RatingService ratingService)
+            IBookService bookService,
+            IReviewService reviewService,
+            IRatingService ratingService)
         {
             this.bookService = bookService;
             this.reviewService = reviewService;
@@ -71,7 +71,7 @@ namespace WebAPI_Task2.Controllers
         public async Task<ActionResult> AddRating(int id, Rating rating)
         {
             if (rating == null || rating.Score > 5) { return BadRequest(); }
-            var temp = 0;
+
             var result = await ratingService.AddRate(id, rating);
 
             if (result)
