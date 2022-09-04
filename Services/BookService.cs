@@ -1,6 +1,5 @@
-﻿using WebAPI_Task2.Model;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using WebAPI_Task2.Model;
 
 namespace WebAPI_Task2.Services
 {
@@ -15,21 +14,21 @@ namespace WebAPI_Task2.Services
 
         public async Task<List<BookDTO>> GetAllBooks(string? order)
         {
-            var books =  _db.Books
+            var books = _db.Books
                 .Select(book => new BookDTO
                 {
                     ID = book.ID,
                     Title = book.Title,
                     Author = book.Author,
-                    Rating = _db.Ratings.FirstOrDefault(r => r.BookID == book.ID).Score,
+                    Rating = GetScore(book.ID),
                     ReviewsNumber = _db.Reviews.Where(r => r.BookID == book.ID).Count()
                 });
 
-            if(order == "title")
+            if (order == "title")
             {
                 books = books.OrderBy(b => b.Title);
             }
-            else if(order == "author")
+            else if (order == "author")
             {
                 books = books.OrderBy(b => b.Author);
             }
@@ -48,7 +47,7 @@ namespace WebAPI_Task2.Services
                     Title = book.Title,
                     Content = book.Content,
                     Author = book.Author,
-                    Rating = _db.Ratings.FirstOrDefault(r => r.BookID == book.ID).Score,
+                    Rating = GetScore(book.ID),
                     Reviews = _db.Reviews.Where(r => r.BookID == book.ID).Select(r => ReviewToDTO(r)).ToList()
                 };
             }
@@ -61,7 +60,7 @@ namespace WebAPI_Task2.Services
             await _db.SaveChangesAsync();
 
             return bookID;
-            
+
         }
 
         public async Task<bool> UpdateBook(Book book)
@@ -94,12 +93,22 @@ namespace WebAPI_Task2.Services
             return true;
         }
 
-        public static ReviewDTO ReviewToDTO (Review review) =>
+        public static ReviewDTO ReviewToDTO(Review review) =>
             new ReviewDTO
             {
                 ID = review.ID,
                 Message = review.Message,
                 Reviewer = review.Reviewer
             };
+
+        public decimal GetScore(int id)
+        {
+            var rate = _db.Ratings.FirstOrDefault(r => r.BookID == id);
+            if(rate == null)
+            {
+                return 0;
+            }
+            return rate.Score;
+        }
     }
 }

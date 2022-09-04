@@ -10,7 +10,6 @@ namespace WebAPI_Task2
         {
             var builder = WebApplication.CreateBuilder(args);
             string connection = builder.Configuration.GetConnectionString("DefaltConnection");
-
             
             builder.Services.AddControllers();
             builder.Services.AddScoped<IBookService, BookService>();
@@ -20,8 +19,7 @@ namespace WebAPI_Task2
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new() { Title = "WebAPI-Task2", Version = "v1" });
-            });
-           
+            });        
             builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
 
             var app = builder.Build();
