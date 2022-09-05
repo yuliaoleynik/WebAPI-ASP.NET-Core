@@ -20,7 +20,7 @@ namespace WebAPI_Task2.Services
                     ID = book.ID,
                     Title = book.Title,
                     Author = book.Author,
-                    Rating = GetScore(book.ID),
+                    Rating = GetScore(_db.Ratings.FirstOrDefault(r => r.BookID == book.ID)),
                     ReviewsNumber = _db.Reviews.Where(r => r.BookID == book.ID).Count()
                 });
 
@@ -47,7 +47,7 @@ namespace WebAPI_Task2.Services
                     Title = book.Title,
                     Content = book.Content,
                     Author = book.Author,
-                    Rating = GetScore(book.ID),
+                    Rating = GetScore(_db.Ratings.FirstOrDefault(r => r.BookID == book.ID)),
                     Reviews = _db.Reviews.Where(r => r.BookID == book.ID).Select(r => ReviewToDTO(r)).ToList()
                 };
             }
@@ -56,10 +56,10 @@ namespace WebAPI_Task2.Services
 
         public async Task<int> AddBook(Book book)
         {
-            int bookID = (await _db.Books.AddAsync(book)).Entity.ID;
+            await _db.Books.AddAsync(book);
             await _db.SaveChangesAsync();
 
-            return bookID;
+            return _db.Books.Count();
 
         }
 
@@ -101,14 +101,13 @@ namespace WebAPI_Task2.Services
                 Reviewer = review.Reviewer
             };
 
-        public decimal GetScore(int id)
+        public static decimal GetScore(Rating? rating)
         {
-            var rate = _db.Ratings.FirstOrDefault(r => r.BookID == id);
-            if(rate == null)
+            if (rating == null)
             {
                 return 0;
             }
-            return rate.Score;
+            return rating.Score;
         }
     }
 }
